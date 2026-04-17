@@ -1,0 +1,21 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "dragon:fire_sword",
+      "menu_category": {
+        "category": "equipment",
+        "group": "minecraft:itemGroup.name.sword"
+      }
+    },
+    "components": {
+      "minecraft:max_stack_size": 1,
+      "minecraft:hand_equipped": true,
+      "minecraft:damage": 8,
+      "minecraft:durability": { "max_durability": 2000 },
+      "minecraft:icon": { "texture": "dragon_fire_sword" },
+      "minecraft:display_name": { "value": "Dragon Fire Sword" },
+      "minecraft:enchantable": { "slot": "sword", "value": 10 }
+    }
+  }
+}

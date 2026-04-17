@@ -1,0 +1,17 @@
+{
+  "name": "minecraft-tools",
+  "version": "0.1.0",
+  "description": "Factory for Minecraft Bedrock .mcaddon files, built with Bun + TypeScript.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "bun run src/build.ts",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@minecraft/server": "1.14.0",
+    "@types/bun": "latest",
+    "jszip": "^3.10.1",
+    "typescript": "^5.5.0"
+  }
+}
