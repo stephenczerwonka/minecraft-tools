@@ -14,6 +14,7 @@ import { readdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { zipDirectory, zipFiles, writeOutput, type ExtraFile } from "./lib/pack.ts";
+import { renderSprite, type SpriteConfig } from "./lib/textures/sprite.ts";
 
 type Triple = readonly [number, number, number];
 
@@ -38,6 +39,8 @@ interface AddonConfig {
   rp: {
     headerUuid: string;
     dataUuid: string;
+    /** Optional: RP-relative path → SpriteConfig. PNG generated at build time. */
+    sprites?: Record<string, SpriteConfig>;
   };
   scriptModuleDependencies: ModuleDep[];
 }
@@ -142,6 +145,10 @@ async function buildAddon(addonDir: string, distDir: string): Promise<string> {
   ];
   const rpExtras: ExtraFile[] = [
     { path: "manifest.json", data: JSON.stringify(rpManifest, null, 2) },
+    ...Object.entries(config.rp.sprites ?? {}).map(([path, spriteConfig]) => ({
+      path,
+      data: renderSprite(spriteConfig),
+    })),
   ];
 
   // Skip TS script sources when zipping the BP — we ship the bundled JS instead.
