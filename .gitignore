@@ -4,4 +4,4 @@ dist/
 *.log
 bun.lockb
 # Generated textures — produced by the build, not hand-crafted assets
-addons/**/rp/textures/items/*.png
+tools/addon-builder/addons/**/rp/textures/items/*.png

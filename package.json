@@ -5,8 +5,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "bun run src/build.ts",
-    "clean": "rm -rf dist"
+    "build": "bun run tools/addon-builder/src/build.ts",
+    "mca": "bun run tools/world-compressor/src/mca-tool.ts",
+    "clean": "rm -rf dist tools/*/dist"
   },
   "devDependencies": {
     "@minecraft/server": "1.14.0",
