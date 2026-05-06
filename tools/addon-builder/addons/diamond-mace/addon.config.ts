@@ -1,4 +1,4 @@
-import { axe } from "../../src/lib/textures/presets.ts";
+import { diamondMaceModel } from "../../src/lib/textures/models.ts";
 
 export default {
   slug: "diamond-mace",
@@ -16,13 +16,7 @@ export default {
     headerUuid: "c9d0e1f2-a3b4-5678-cd34-789012345678",
     dataUuid:   "d0e1f2a3-b4c5-6789-de45-890123456789",
     sprites: {
-      "textures/items/diamond_mace.png": axe({
-        bladeEdge: [ 80, 240, 255, 255],  // bright diamond cyan edge
-        bladeBody: [ 20, 140, 210, 255],  // deep diamond blue body
-        handle:    [ 60,  30,  10, 255],  // dark wood handle
-        glow:      [ 60, 200, 255, 160],  // diamond shimmer glow
-        size: 32,
-      }),
+      "textures/items/diamond_mace.png": diamondMaceModel(),
     },
   },
   scriptModuleDependencies: [

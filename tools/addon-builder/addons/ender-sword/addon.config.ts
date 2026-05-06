@@ -1,4 +1,4 @@
-import { sword } from "../../src/lib/textures/presets.ts";
+import { enderSwordModel } from "../../src/lib/textures/models.ts";
 
 export default {
   slug: "ender-sword",
@@ -16,15 +16,7 @@ export default {
     headerUuid: "d4e5f6a7-b8c9-0123-defa-234567890123",
     dataUuid:   "e5f6a7b8-c9d0-1234-efab-345678901234",
     sprites: {
-      "textures/items/ender_sword.png": sword({
-        bladeTip:  [100, 255, 220, 255],  // teal tip — ender pearl shimmer
-        bladeBase: [ 80,   0, 160, 255],  // deep void purple
-        guard:     [ 30,   0,  80, 255],  // near-black purple
-        handle:    [ 15,   0,  50, 255],  // obsidian dark
-        pommel:    [ 80,   0, 140, 255],
-        glow:      [120,  40, 255, 180],  // void glow
-        size: 32,                          // oversized — looks big
-      }),
+      "textures/items/ender_sword.png": enderSwordModel(),
     },
   },
   scriptModuleDependencies: [

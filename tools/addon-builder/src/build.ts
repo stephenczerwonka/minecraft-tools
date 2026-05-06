@@ -15,6 +15,13 @@ import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { zipDirectory, zipFiles, writeOutput, type ExtraFile } from "./lib/pack.ts";
 import { renderSprite, type SpriteConfig } from "./lib/textures/sprite.ts";
+import { renderIso, type IsoModel } from "./lib/textures/isometric.ts";
+
+type SpriteDef = SpriteConfig | IsoModel;
+
+function renderDef(def: SpriteDef): Uint8Array {
+  return "kind" in def && def.kind === "iso" ? renderIso(def) : renderSprite(def as SpriteConfig);
+}
 
 type Triple = readonly [number, number, number];
 
@@ -39,8 +46,8 @@ interface AddonConfig {
   rp: {
     headerUuid: string;
     dataUuid: string;
-    /** Optional: RP-relative path → SpriteConfig. PNG generated at build time. */
-    sprites?: Record<string, SpriteConfig>;
+    /** Optional: RP-relative path → sprite or iso model. PNG generated at build time. */
+    sprites?: Record<string, SpriteDef>;
   };
   scriptModuleDependencies: ModuleDep[];
 }
@@ -145,9 +152,9 @@ async function buildAddon(addonDir: string, distDir: string): Promise<string> {
   ];
   const rpExtras: ExtraFile[] = [
     { path: "manifest.json", data: JSON.stringify(rpManifest, null, 2) },
-    ...Object.entries(config.rp.sprites ?? {}).map(([path, spriteConfig]) => ({
+    ...Object.entries(config.rp.sprites ?? {}).map(([path, def]) => ({
       path,
-      data: renderSprite(spriteConfig),
+      data: renderDef(def),
     })),
   ];
 
