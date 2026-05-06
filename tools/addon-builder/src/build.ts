@@ -10,8 +10,8 @@
  */
 
 import { existsSync } from "node:fs";
-import { readdir } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { mkdir, readdir, writeFile } from "node:fs/promises";
+import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { zipDirectory, zipFiles, writeOutput, type ExtraFile } from "./lib/pack.ts";
 import { renderSprite, type SpriteConfig } from "./lib/textures/sprite.ts";
@@ -140,6 +140,19 @@ async function loadConfig(addonDir: string): Promise<AddonConfig> {
   return mod.default;
 }
 
+async function writeStaging(
+  stageDir: string,
+  extras: ExtraFile[],
+): Promise<void> {
+  await Promise.all(
+    extras.map(async ({ path, data }) => {
+      const dest = join(stageDir, path);
+      await mkdir(dirname(dest), { recursive: true });
+      await writeFile(dest, typeof data === "string" ? data : Buffer.from(data));
+    }),
+  );
+}
+
 async function buildAddon(addonDir: string, distDir: string): Promise<string> {
   const config = await loadConfig(addonDir);
   const bpManifest = buildBpManifest(config);
@@ -157,6 +170,13 @@ async function buildAddon(addonDir: string, distDir: string): Promise<string> {
       data: renderDef(def),
     })),
   ];
+
+  // Write generated files to a staging tree so they're easy to inspect on disk.
+  const stageDir = join(distDir, config.slug);
+  await Promise.all([
+    writeStaging(join(stageDir, "bp"), bpExtras),
+    writeStaging(join(stageDir, "rp"), rpExtras),
+  ]);
 
   // Skip TS script sources when zipping the BP — we ship the bundled JS instead.
   const bpBuffer = await zipDirectory(join(addonDir, "bp"), bpExtras, (p) =>
