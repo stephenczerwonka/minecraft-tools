@@ -168,6 +168,90 @@ export function axe(p: AxeParams): SpriteConfig {
 }
 
 // ---------------------------------------------------------------------------
+// Minigun preset
+// ---------------------------------------------------------------------------
+
+export interface MinigunParams {
+  /** Main barrel metal colour. */
+  barrelColor: RGBA;
+  /** Bright highlight / hot-metal edge colour. */
+  barrelHighlight: RGBA;
+  /** Gun body / housing colour. */
+  bodyColor: RGBA;
+  /** Grip handle colour. */
+  gripColor: RGBA;
+  /** Fire glow — set alpha=0 to disable. */
+  glow?: RGBA;
+  size?: number;
+}
+
+export function minigun(p: MinigunParams): SpriteConfig {
+  const n = p.size ?? 16;
+  const layers: Layer[] = [];
+
+  // Fire glow behind barrel cluster
+  if (p.glow && p.glow[3] > 0) {
+    layers.push({
+      type: "line",
+      x1: s(3.0, n), y1: s(11.0, n),
+      x2: s(12.0, n), y2: s(3.0, n),
+      thickness: s(3.0, n),
+      gradient: grad(p.barrelColor, p.barrelHighlight),
+      glow: { radius: s(2.0, n), color: p.glow },
+    });
+  }
+
+  // Upper barrel
+  layers.push({
+    type: "line",
+    x1: s(2.5, n), y1: s(10.5, n),
+    x2: s(11.5, n), y2: s(2.5, n),
+    thickness: s(0.9, n),
+    gradient: grad(p.barrelColor, p.barrelHighlight),
+  });
+
+  // Lower barrel (parallel, offset 2px)
+  layers.push({
+    type: "line",
+    x1: s(4.5, n), y1: s(12.5, n),
+    x2: s(13.5, n), y2: s(4.5, n),
+    thickness: s(0.9, n),
+    gradient: grad(p.barrelColor, p.barrelHighlight),
+  });
+
+  // Barrel tip end-cap (right side)
+  layers.push({
+    type: "rect",
+    x: Math.round(s(11.5, n)),
+    y: Math.round(s(2, n)),
+    w: Math.round(s(2.5, n)) || 1,
+    h: Math.round(s(4, n)) || 1,
+    gradient: flat(p.barrelHighlight),
+  });
+
+  // Body housing (connects barrel cluster to grip)
+  layers.push({
+    type: "rect",
+    x: Math.round(s(2, n)),
+    y: Math.round(s(10, n)),
+    w: Math.round(s(4, n)) || 1,
+    h: Math.round(s(3, n)) || 1,
+    gradient: flat(p.bodyColor),
+  });
+
+  // Grip
+  layers.push({
+    type: "line",
+    x1: s(3.5, n), y1: s(13.0, n),
+    x2: s(1.5, n), y2: s(15.0, n),
+    thickness: s(0.8, n),
+    gradient: flat(p.gripColor),
+  });
+
+  return { size: n, layers };
+}
+
+// ---------------------------------------------------------------------------
 // Pickaxe preset
 // ---------------------------------------------------------------------------
 
