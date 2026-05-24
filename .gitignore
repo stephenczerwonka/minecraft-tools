@@ -3,5 +3,6 @@ dist/
 .DS_Store
 *.log
 bun.lockb
-# Generated textures — produced by the build, not hand-crafted assets
-tools/addon-builder/addons/**/rp/textures/items/*.png
+# .cache holds content-addressed AI output; the cache dir itself is gitignored,
+# but the per-addon PNG copies under rp/textures/items/ are committed.
+tools/addon-builder/.cache/

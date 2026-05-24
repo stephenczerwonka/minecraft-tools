@@ -14,7 +14,9 @@ import { readdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { zipDirectory, zipFiles, writeOutput, type ExtraFile } from "./lib/pack.ts";
-import { renderSprite, type SpriteConfig } from "./lib/textures/sprite.ts";
+import type { SpriteConfig } from "./lib/textures/sprite.ts";
+import { normalizeSource, resolveIconSource, type IconSource } from "./lib/icons/source.ts";
+import { IconCacheMissError } from "./lib/icons/provider.ts";
 
 type Triple = readonly [number, number, number];
 
@@ -39,8 +41,8 @@ interface AddonConfig {
   rp: {
     headerUuid: string;
     dataUuid: string;
-    /** Optional: RP-relative path → SpriteConfig. PNG generated at build time. */
-    sprites?: Record<string, SpriteConfig>;
+    /** Optional: RP-relative path → SpriteConfig or IconSource. PNG resolved at build time. */
+    sprites?: Record<string, SpriteConfig | IconSource>;
   };
   scriptModuleDependencies: ModuleDep[];
 }
@@ -143,12 +145,24 @@ async function buildAddon(addonDir: string, distDir: string): Promise<string> {
     { path: "manifest.json", data: JSON.stringify(bpManifest, null, 2) },
     { path: "scripts/main.js", data: bundledScript },
   ];
+  const spriteEntries = Object.entries(config.rp.sprites ?? {});
+  const resolvedSprites: ExtraFile[] = [];
+  for (const [path, value] of spriteEntries) {
+    const source = normalizeSource(value);
+    try {
+      const data = await resolveIconSource(source, { addonDir });
+      resolvedSprites.push({ path, data });
+    } catch (err) {
+      if (err instanceof IconCacheMissError) {
+        console.warn(`  [skip] ${path}: ${err.message}`);
+      } else {
+        throw err;
+      }
+    }
+  }
   const rpExtras: ExtraFile[] = [
     { path: "manifest.json", data: JSON.stringify(rpManifest, null, 2) },
-    ...Object.entries(config.rp.sprites ?? {}).map(([path, spriteConfig]) => ({
-      path,
-      data: renderSprite(spriteConfig),
-    })),
+    ...resolvedSprites,
   ];
 
   // Skip TS script sources when zipping the BP — we ship the bundled JS instead.

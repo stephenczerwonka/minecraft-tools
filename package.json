@@ -6,6 +6,8 @@
   "private": true,
   "scripts": {
     "build": "bun run tools/addon-builder/src/build.ts",
+    "icon": "bun run tools/addon-builder/src/icon.ts",
+    "icon:preview": "bun run tools/addon-builder/src/icon-preview.ts",
     "mca": "bun run tools/world-compressor/src/mca-tool.ts",
     "clean": "rm -rf dist tools/*/dist"
   },
