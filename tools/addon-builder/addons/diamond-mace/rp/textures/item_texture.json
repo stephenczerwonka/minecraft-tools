@@ -1,0 +1,9 @@
+{
+  "resource_pack_name": "diamond_mace",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "diamond_mace": {
+      "textures": "textures/items/diamond_mace"
+    }
+  }
+}

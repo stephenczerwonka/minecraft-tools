@@ -214,7 +214,7 @@ function concat(...chunks: Uint8Array[]): Uint8Array {
   return out;
 }
 
-function encodePng(pixels: RGBA[], size: number): Uint8Array {
+export function encodePng(pixels: RGBA[], size: number): Uint8Array {
   // IHDR
   const ihdr = new Uint8Array(13);
   const iv = new DataView(ihdr.buffer);
