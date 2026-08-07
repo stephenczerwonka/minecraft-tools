@@ -15,6 +15,7 @@ tools/
     addons/<name>/    # one directory per addon
   world-compressor/   # explode/repack/verify .mca regions for snapshot archival
     src/
+  world-backup/       # nightly timestamped world backups
 ```
 
 Each tool is self-contained under `tools/<name>/`. There are no shared packages
@@ -78,3 +79,40 @@ bun run mca repack   ./exploded/world-2026-01  ./restored/world-2026-01
 
 See `tools/world-compressor/src/mca-tool.ts` for the full interface and the
 preserved/not-preserved invariants.
+
+---
+
+## world-backup
+
+On Windows, back up every Java or Bedrock world updated within the last five
+days. Point the script at the directory that contains the individual world
+folders; a world is recognized by its `level.dat` file.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\world-backup\backup-worlds.ps1 `
+  -WorldsDirectory 'C:\Minecraft\worlds' `
+  -SaveDirectory 'D:\Minecraft Backups'
+```
+
+Each run creates a `.tar.gz` archive and a matching `.sha256` checksum. The
+archive is built as a temporary file and moved into place only after `tar`
+succeeds. A lock prevents two backups from writing to the same save directory
+at once.
+
+Register it with Windows Task Scheduler to run every night at midnight:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\world-backup\install-backup-task.ps1 `
+  -WorldsDirectory 'C:\Minecraft\worlds' `
+  -SaveDirectory 'D:\Minecraft Backups'
+```
+
+The task uses the computer's local timezone and catches up after sleep or a
+shutdown. Open **Task Scheduler** and select **Minecraft World Backup** to
+inspect, run, or remove it. For a consistent snapshot, close Minecraft or stop
+the server before the task runs; copying a world while it is actively being
+written can produce an inconsistent backup. Pass `-UpdatedWithinDays N` to
+either PowerShell script to change the five-day window.
+
+Linux users can run `backup-world.sh WORLD_DIRECTORY SAVE_DIRECTORY` from a
+standard midnight cron entry (`0 0 * * *`).
